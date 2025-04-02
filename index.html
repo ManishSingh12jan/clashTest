@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <title>This is component example</title>
+	 <link rel="stylesheet" href="./resources/default/style.css">
+    <style>
+   *  {
+    margin:0;
+}
+html, body {
+    height:100%;
+}
+.container {
+    position:relative;
+    width: 100%;
+    height: 100%;
+}
+.top {
+    background: lightblue;
+    top:0;
+    height: 30px;
+    width: 100%;
+}
+
+.left {
+    position:absolute;
+    top:30px;
+    left:0;
+    background: lightgray;
+    width: 30%;
+    height:94%;
+}
+.right {
+    position:absolute;
+    top:50px;
+    right:0;
+    bottom:50px;
+    background: gold;
+    width: 50px;
+}
+
+.bottom {
+    position:absolute;
+    bottom:0;
+    background: blue;
+    width: 100%;
+    height: 50px;
+}
+.content {
+    position:absolute;
+    top:30px;
+    left:0%;
+    background: white;
+    height:94%;
+    width:100%;
+}
+.square
+{
+    margin:1px;
+    width:20%;
+    text-align:left;
+    display:inline-block;    
+}
+.divSquareOuter
+{
+    text-align:center;
+    width:100%;
+    height: 80pt;
+}
+
+    </style>
+	 <script type="text/javascript" src="./resources/ifcJsViewer.js"></script> 
+     <script type="text/javascript" src="./resources/jquery-3.5.1.min.js"></script>
+	 <script type="text/javascript" src="./resources/jstree.min.js"></script>
+	 
+  </head>
+  <body>
+  <div class="container">
+    <div class="top">
+	  <div class="divSquareOuter">
+	  <div class = "square"><button type="button" onclick="loadfragfiles()">Load Frag Files</button></div>  
+	  <div class = "square"><button type="button" onclick="hideAll()">Hide & Clash Detect</button></div>  
+	  </div>
+	</div>
+    <!-- <div class="left">  -->
+	   <!-- <div id="hierarchy" style="overflow:scroll; height:100%;" ></div> -->
+	 <!-- </div> -->
+    <div class="content" >
+	<div id="container"style="height:100%;width:100%" ></div>
+    </div>
+
+  
+</div>
+
+  
+ <script> 
+      var smartLoader;
+	  var model1;
+	  var model2;
+		  
+     document.addEventListener("DOMContentLoaded", function() 
+	 {
+		var container= document.getElementById('container');
+    		smartLoader= new SmartIfcLoader();
+			smartLoader.setupComponents(container);
+	
+	 }); 
+		
+ 
+     async function loadfragfiles()
+	 {
+	    debugger
+	   var archFrag = "https://raw.githubusercontent.com/ManishSingh12jan/FragTest/main/SnodownArchitecture.frag";
+       var archProp = "https://raw.githubusercontent.com/ManishSingh12jan/FragTest/main/SnodownArchitecture.json";
+	   var archRelation = "https://raw.githubusercontent.com/ManishSingh12jan/FragTest/main/SnodownArchitecture-Relation.json";
+	   
+	   var pluFrag = "https://raw.githubusercontent.com/ManishSingh12jan/FragTest/main/SnodownPlumbing.frag";
+       var pluProp = "https://raw.githubusercontent.com/ManishSingh12jan/FragTest/main/SnodownPlumbing.zip";//"https://raw.githubusercontent.com/ManishSingh12jan/FragTest/main/SnodownPlumbing.json";
+	   var pluRelation = "https://raw.githubusercontent.com/ManishSingh12jan/FragTest/main/SnodownPlumbing_Relation.json";
+	   
+	   model1=  await smartLoader.loadFragFile(archFrag);
+	   smartLoader.world.scene.three.add(model1);
+	   
+	   model2=await smartLoader.loadFragFile(pluFrag);
+	   smartLoader.world.scene.three.add(model2);
+	   
+	   // Set Properties 
+	   await smartLoader.setProperties(archProp,model1);
+	   await smartLoader.setRelationShip(archRelation,model1);
+	   
+	   await smartLoader.setPropertiesFromzip(pluProp,model2);
+	   await smartLoader.setRelationShip(pluRelation,model2);
+	   
+	 }
+	
+	 async function hideAll()
+	 {
+	    debugger
+	 
+   	     await smartLoader.hider.set(false);
+		 // 307912 , 307616 Not Clashed
+		 //  307838,307764 Clashed With pipe
+  
+	    var wallItem=	model1.getFragmentMap([164326]);  
+	    var ductItem=	model2.getFragmentMap([307838,307764,307912 , 307616]);  
+	    await smartLoader.hider.set(true,wallItem); 
+	    await smartLoader.hider.set(true,ductItem);
+
+      // Get the vertices of wall
+	  
+        const vertices = model1.getItemVertices(164326);
+			for (const vertex of vertices) {
+			  smartLoader.fragments.applyBaseCoordinateSystem(vertex, model1.coordinationMatrix)
+			}
+        // await plotVertices(vertices);
+          const vertices2 = model2.getItemVertices(307838);
+			for (const vertex of vertices2) {
+			  smartLoader.fragments.applyBaseCoordinateSystem(vertex, model2.coordinationMatrix)
+			}
+          // await plotVertices(vertices2);
+		    const vertices3 = model2.getItemVertices(307764);
+			for (const vertex of vertices3) {
+			  smartLoader.fragments.applyBaseCoordinateSystem(vertex, model2.coordinationMatrix)
+			}
+			
+			    const vertices4 = model2.getItemVertices(307912);
+			for (const vertex of vertices3) {
+			  smartLoader.fragments.applyBaseCoordinateSystem(vertex, model2.coordinationMatrix)
+			}
+			
+			
+			    const vertices5 = model2.getItemVertices(307616);
+			for (const vertex of vertices3) {
+			  smartLoader.fragments.applyBaseCoordinateSystem(vertex, model2.coordinationMatrix)
+			}
+			
+			
+		var r=	checkMeshesIntersection(vertices,vertices2);
+	    var r1=	checkMeshesIntersection(vertices,vertices3);
+		var r2=	checkMeshesIntersection(vertices,vertices4);
+		var r3=	checkMeshesIntersection(vertices,vertices5);
+		
+	 }
+	 
+
+	 
+	async function plotVertices(vertices)
+	 {
+	    const pointMaterial = new MeshBasicMaterial$1({ color: '#fc6f03' });
+        const pointGeometry = new SphereGeometry$1(0.2, 8, 8);
+		  for (let i = 0; i < vertices.length; i++) {
+		  
+		   var pointV = new Mesh$1(pointGeometry, pointMaterial);
+                pointV.position.copy(vertices[i]);
+                smartLoader.world.scene.three.add(pointV);
+		  
+		  }
+	 
+	 }
+
+	 
+	 function checkBoundingBoxIntersection(vertices1, vertices2) {
+			const box1 = new Box3$1();
+			vertices1.forEach(vertex => {
+				box1.expandByPoint(new Vector3(vertex.x, vertex.y, vertex.z));
+			});
+
+			const box2 = new Box3$1();
+			vertices2.forEach(vertex => {
+				box2.expandByPoint(new Vector3(vertex.x, vertex.y, vertex.z));
+			});
+
+			return box1.intersectsBox(box2);  // Returns true if bounding boxes intersect
+      }
+	  
+
+	
+	function checkMeshesIntersection(vertices1, vertices2) {
+	 
+	    // 1st Check with bounding box
+	debugger
+		 if (!checkBoundingBoxIntersection(vertices1, vertices2)) {
+			return false; 
+		  }
+	
+		  // Create geometries from vertices
+		const geometry1 = createGeometryFromVertices(vertices1);
+		geometry1.computeBoundingBox();
+		const geometry2 = createGeometryFromVertices(vertices2);
+		geometry2.computeBoundingBox();
+
+		// Assuming mesh1 and mesh2 exist and their matrices are properly set
+		const mesh1 = new Mesh$1(geometry1);  // If you're using Three.js
+		const mesh2 = new Mesh$1(geometry2);
+
+		// Ensure the matrices of both meshes are up-to-date
+		mesh1.updateMatrixWorld(true);
+		mesh2.updateMatrixWorld(true);
+
+		// Create a transformation matrix that transforms mesh2's geometry into mesh1's coordinate space
+		const transformMatrix = new Matrix4()
+			.copy(mesh2.matrixWorld)
+			.invert()   // Inverse of mesh2's world matrix
+			.multiply(mesh1.matrixWorld);  // Multiply by mesh1's world matrix
+
+		// Create BVH for both geometries (ensure you have MeshBVH available)
+		const bvh1 = new MeshBVH(geometry1);
+		const bvh2 = new MeshBVH(geometry2);
+
+		// Check if the transformed geometry of mesh2 intersects with geometry1
+		const intersects = bvh1.intersectsGeometry(geometry2, transformMatrix);
+
+		if (intersects) {
+			console.log("Meshes intersect!");
+			return true;  // Return true if intersection is found
+		}
+		
+		return false;  
+	}
+	
+	function createGeometryFromVertices(vertices) {
+        const geometry = new BufferGeometry$1();
+        const flattenedVertices = flattenVector3Array(vertices);
+        geometry.setAttribute('position', new Float32BufferAttribute(flattenedVertices, 3));
+        return geometry;
+    }
+	
+    function flattenVector3Array(vertices) {
+        if (!Array.isArray(vertices) || vertices.length === 0) {
+            console.error('Invalid input: vertices must be a non-empty array.');
+            return null;
+        }
+
+        // Check if each vertex is a THREE.Vector3 object
+        for (let i = 0; i < vertices.length; i++) {
+            if (!(vertices[i] instanceof Vector3)) {
+                console.error(`Invalid vertex at index ${i}: Not a THREE.Vector3 object`);
+                return null;
+            }
+        }
+
+        return vertices.reduce((acc, vertex) => acc.concat(vertex.toArray()), []);
+    }
+
+     </script>
+ </body>
+ </html>
+   
+
